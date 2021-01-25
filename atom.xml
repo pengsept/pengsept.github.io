@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://pengsept.github.io</id>
     <title>Gridea</title>
-    <updated>2021-01-25T10:15:50.363Z</updated>
+    <updated>2021-01-25T10:18:32.663Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://pengsept.github.io"/>
     <link rel="self" href="https://pengsept.github.io/atom.xml"/>
@@ -10,6 +10,37 @@
     <logo>https://pengsept.github.io/images/avatar.png</logo>
     <icon>https://pengsept.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[Test]]></title>
+        <id>https://pengsept.github.io/post/test/</id>
+        <link href="https://pengsept.github.io/post/test/">
+        </link>
+        <updated>2021-01-25T10:17:44.000Z</updated>
+        <content type="html"><![CDATA[<p>Linux</p>
+<p>ll -t | tac    排序文件</p>
+<p>find | grep xxx 查找文件</p>
+<p>ll -lh      查看文件大小</p>
+<p>vi /etc/sysconfig/network-scripts/ifcfg-ens32</p>
+<p>动态<br>
+bootproto=dhcp</p>
+<p>onboot=yes</p>
+<p>systemctl restart network #修改后重启一下网络服务即可</p>
+<p>静态<br>
+bootproto=static</p>
+<p>onboot=yes</p>
+<p>#在最后加上几行，IP地址、子网掩码、网关、dns服务器<br>
+IPADDR=192.168.1.160<br>
+NETMASK=255.255.255.0<br>
+GATEWAY=192.168.1.1<br>
+DNS1=119.29.29.29<br>
+DNS2=8.8.8.8<br>
+systemctl restart network #重启网络服务</p>
+<p>DNS<br>
+vi /etc/resolv.conf</p>
+<p>Nameserver 114.114.114.114<br>
+Nameserver 8.8.8.8</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://pengsept.github.io/post/hello-gridea/</id>
