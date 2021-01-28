@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://pengsept.github.io/favicon.ico?v=1611829638957">
+<link rel="shortcut icon" href="https://pengsept.github.io/favicon.ico?v=1611829817940">
 <link rel="stylesheet" href="https://pengsept.github.io/styles/main.css">
 
 
@@ -33,7 +33,7 @@ Cisco将两台物理Catalyst 6500系列交换机虚拟成一台逻辑交换机�
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://pengsept.github.io">
-        <img src="https://pengsept.github.io/images/avatar.png?v=1611829638957" class="site-logo">
+        <img src="https://pengsept.github.io/images/avatar.png?v=1611829817940" class="site-logo">
         <h1 class="site-title">云屿小筑</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -122,7 +122,8 @@ VSS系统冗余<br>
 VSS使用SSO（Stateful Switchover）和NSF（nonstop forwarding）实现引擎和路由转发的快速切换。NSF是在配置了两块RP卡的三层设备中，如果运行了OSPF、EIGRP、BGP、ISIS等路由协议，如果没有配置NSF，A/P RP切换需要5min，而配置了NSF，A/P RP切换只需5sec。<br>
 VSS双活检测<br>
 VSS使用EPAgP（增强PAgp）协议、IP BFD、Fast Hello Packets、三种方式来进行双活检测和转发恢复。在极端情况下，两台机箱双活时，原主用交换机会将除VSL链路端口以外的其他端口shutdown，原备用交换机承载转发任务。这样避免网络中产生冲突。</p>
-<p>使用两台Cisco 6509（sup-2T引擎）进行测试，两台CISCO 6509形成VSS，分别使用两个引擎接口T5/4和T5/5作为VSL，使用G1/2作为双活检测线路；测试当VSL断开，使用fast-hello的机制，防止VSS双活的出现。测试拓扑如下</p>
+<p>使用两台Cisco 6509（sup-2T引擎）进行测试，两台CISCO 6509形成VSS，分别使用两个引擎接口T5/4和T5/5作为VSL，使用G1/2作为双活检测线路；测试当VSL断开，使用fast-hello的机制，防止VSS双活的出现。测试拓扑如下<br>
+<img src="https://pengsept.github.io/post-images/1611829761546.jpg" alt="" loading="lazy"></p>
 <p>具体配置：<br>
 Switch-1配置：</p>
 <p>（1）制定switch 1，配置优先级</p>
