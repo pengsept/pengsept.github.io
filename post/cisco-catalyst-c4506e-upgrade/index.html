@@ -2,13 +2,11 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
-    <meta name="description" content="Linux
-ll -t | tac    排序文件
-find | grep xxx 查找文件
-ll -lh      查看文件大小
-vi /etc/sysconfig/network-scripts/ifcfg-ens32
-动态
-bootp..." />
+    <meta name="description" content="1.升级前准备
+配置VRF IPv4 管理端口
+Switch# config t
+Enter configuration commands, one per line. End with CNTL/Z.
+Switch(config)# vr..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://pengsept.github.io/media/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://pengsept.github.io/styles/main.css">
@@ -829,8 +827,8 @@ bootp..." />
                 
             </div>
             <div class="postinfo-detail">
-                <div class="postdate"><i class="fa fa-calendar"></i>2021-01-25</div>
-            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 1 min read</div>
+                <div class="postdate"><i class="fa fa-calendar"></i>2021-01-28</div>
+            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 2 min read</div>
             <div class="posttag">
                 
             </div>
@@ -838,9 +836,9 @@ bootp..." />
         
         <div id="articlecontent">
             <div id="texttitle" style="text-align: center">
-                <h2 id="ptitle">Linux基础命令</h2>
+                <h2 id="ptitle">Cisco Catalyst C4506E Upgrade</h2>
                 <!-- id 将作为查询条件 -->
-                <div id="pl" style="display:none">https://pengsept.github.io/post/test/</div>
+                <div id="pl" style="display:none">https://pengsept.github.io/post/cisco-catalyst-c4506e-upgrade/</div>
                 <div id="rootaddr" style="display:none">https://pengsept.github.io</div>
                 <span id="hotnum">
                     <h4><i class="fa fa-eye" aria-hidden="true" style="color: #FF8C00;"></i>&nbsp;&nbsp;热度</i>: <i
@@ -848,29 +846,65 @@ bootp..." />
                 </span>
             </div>
             <div class="text ">
-                <p>Linux</p>
-<p>ll -t | tac    排序文件</p>
-<p>find | grep xxx 查找文件</p>
-<p>ll -lh      查看文件大小</p>
-<p>vi /etc/sysconfig/network-scripts/ifcfg-ens32</p>
-<p>动态<br>
-bootproto=dhcp</p>
-<p>onboot=yes</p>
-<p>systemctl restart network #修改后重启一下网络服务即可</p>
-<p>静态<br>
-bootproto=static</p>
-<p>onboot=yes</p>
-<p>#在最后加上几行，IP地址、子网掩码、网关、dns服务器<br>
-IPADDR=192.168.1.160<br>
-NETMASK=255.255.255.0<br>
-GATEWAY=192.168.1.1<br>
-DNS1=119.29.29.29<br>
-DNS2=8.8.8.8<br>
-systemctl restart network #重启网络服务</p>
-<p>DNS<br>
-vi /etc/resolv.conf</p>
-<p>Nameserver 114.114.114.114<br>
-Nameserver 8.8.8.8</p>
+                <p>1.升级前准备<br>
+配置VRF IPv4 管理端口<br>
+Switch# config t<br>
+Enter configuration commands, one per line. End with CNTL/Z.<br>
+Switch(config)# vrf upgrade-cli multi-af-mode common-policies vrf mgmtVrf<br>
+You are about to upgrade to the multi-AF VRF syntax commands.<br>
+You will lose any IPv6 address configured on interfaces<br>
+belonging to upgraded VRFs.<br>
+Are you sure ? [yes]:<br>
+Number of VRFs upgraded: 1<br>
+Switch(config)# exit</p>
+<p>vrf definition mgmtVrf<br>
+!<br>
+address-family ipv4<br>
+exit-address-family<br>
+!<br>
+interface FastEthernet1<br>
+vrf forwarding mgmtVrf<br>
+ip address 10.1.1.1 255.255.255.0<br>
+speed auto<br>
+duplex auto</p>
+<p>或</p>
+<p>配置VRF IPv6 管理端口<br>
+Switch# config t<br>
+Enter configuration commands, one per line. End with CNTL/Z.<br>
+Switch(config)# vrf definition mgmtVrf<br>
+Switch(config-vrf)# address-family ipv6<br>
+Switch(config-vrf-af)# exit<br>
+Switch(config-vrf)# exit<br>
+Switch(config)# interface fa1<br>
+Switch(config-if)# ipv6 address 2000::1/64</p>
+<p>vrf definition mgmtVrf<br>
+!<br>
+address-family ipv4<br>
+exit-address-family<br>
+!<br>
+address-family ipv6<br>
+exit-address-family<br>
+!<br>
+interface FastEthernet1<br>
+vrf forwarding mgmtVrf<br>
+ip address 10.1.1.1 255.255.255.0<br>
+speed auto<br>
+duplex auto<br>
+ipv6 address 2000::1/64</p>
+<p>升级步骤<br>
+Switch&gt; enable<br>
+Switch# show issu state<br>
+Switch# show redundancy</p>
+<p>双机设备确保SSO状态及配置，主备，软件版本一致</p>
+<p>Switch# show issu state detail</p>
+<p>两个引擎需存在相同的新的软件版本</p>
+<p>Switch# dir bootflash:<br>
+Directory of bootflash:/</p>
+<p>Switch# dir slavebootflash:<br>
+Directory of slavebootflash:/</p>
+<p>Switch&gt; enable<br>
+Switch# issu loadversion 1 bootflash:new_image 2 slavebootflash:new_image<br>
+Switch# show issu state detail</p>
 
             </div>
             <hr style="width: 80%;">
@@ -879,15 +913,30 @@ Nameserver 8.8.8.8</p>
             <div class="postfooter">
                 <ul class="post-copyright">
                     <li><strong>文章作者：</strong></li>
-            <li><strong>原文链接：</strong>https://pengsept.github.io/post/test/</li>
+            <li><strong>原文链接：</strong>https://pengsept.github.io/post/cisco-catalyst-c4506e-upgrade/</li>
             <li><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用<i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA
                 许可协议。转载请注明出处！</li>
             </ul>
         </div>
         <div id="otherpost">
             
-            <a  data-pjax class="prev-post-pc" href="https://pengsept.github.io/post/mac-book-os-an-zhuang/"  style="color: black;">
+            <a  data-pjax class="prev-post-pc" href="https://pengsept.github.io/post/cisco-switch-vss-c4500-c6500-c6800/"  style="color: black;">
                 <div id="ppcontainer">
+                    
+                    
+                    <img src="" style="width: 100%;" class="opimg">
+                    
+                    
+                    <h4 class="optitle">Cisco Switch VSS C4500 C6500 C6800 </h4>
+                </div>
+            </a>
+            <div class="prev-post">
+                上一篇 <a  data-pjax href="https://pengsept.github.io/post/cisco-switch-vss-c4500-c6500-c6800/">Cisco Switch VSS C4500 C6500 C6800 </a>
+            </div>
+            
+            
+            <a data-pjax class="next-post-pc" href="https://pengsept.github.io/post/mac-book-os-an-zhuang/"  style="color: black;">
+                <div id="npcontainer">
                     
                     
                     <img src="" style="width: 100%;" class="opimg">
@@ -896,10 +945,9 @@ Nameserver 8.8.8.8</p>
                     <h4 class="optitle">MAC book OS 安装</h4>
                 </div>
             </a>
-            <div class="prev-post">
-                上一篇 <a  data-pjax href="https://pengsept.github.io/post/mac-book-os-an-zhuang/">MAC book OS 安装</a>
+            <div class="next-post">
+                下一篇 <a  data-pjax href="https://pengsept.github.io/post/mac-book-os-an-zhuang/">MAC book OS 安装</a>
             </div>
-            
             
         </div>
     </div>

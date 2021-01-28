@@ -2,13 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
-    <meta name="description" content="Linux
-ll -t | tac    排序文件
-find | grep xxx 查找文件
-ll -lh      查看文件大小
-vi /etc/sysconfig/network-scripts/ifcfg-ens32
-动态
-bootp..." />
+    <meta name="description" content="使用两台Cisco 6509（sup-2T引擎）进行测试，两台CISCO 6509形成VSS，分别使用两个引擎接口T5/4和T5/5作为VSL，使用G1/2作为双活检测线路；测试当VSL断开，使用fast-hello的机制，防止VSS双活的..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://pengsept.github.io/media/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://pengsept.github.io/styles/main.css">
@@ -829,8 +823,8 @@ bootp..." />
                 
             </div>
             <div class="postinfo-detail">
-                <div class="postdate"><i class="fa fa-calendar"></i>2021-01-25</div>
-            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 1 min read</div>
+                <div class="postdate"><i class="fa fa-calendar"></i>2021-01-28</div>
+            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
             <div class="posttag">
                 
             </div>
@@ -838,9 +832,9 @@ bootp..." />
         
         <div id="articlecontent">
             <div id="texttitle" style="text-align: center">
-                <h2 id="ptitle">Linux基础命令</h2>
+                <h2 id="ptitle">Cisco Switch VSS C4500 C6500 C6800 </h2>
                 <!-- id 将作为查询条件 -->
-                <div id="pl" style="display:none">https://pengsept.github.io/post/test/</div>
+                <div id="pl" style="display:none">https://pengsept.github.io/post/cisco-switch-vss-c4500-c6500-c6800/</div>
                 <div id="rootaddr" style="display:none">https://pengsept.github.io</div>
                 <span id="hotnum">
                     <h4><i class="fa fa-eye" aria-hidden="true" style="color: #FF8C00;"></i>&nbsp;&nbsp;热度</i>: <i
@@ -848,29 +842,122 @@ bootp..." />
                 </span>
             </div>
             <div class="text ">
-                <p>Linux</p>
-<p>ll -t | tac    排序文件</p>
-<p>find | grep xxx 查找文件</p>
-<p>ll -lh      查看文件大小</p>
-<p>vi /etc/sysconfig/network-scripts/ifcfg-ens32</p>
-<p>动态<br>
-bootproto=dhcp</p>
-<p>onboot=yes</p>
-<p>systemctl restart network #修改后重启一下网络服务即可</p>
-<p>静态<br>
-bootproto=static</p>
-<p>onboot=yes</p>
-<p>#在最后加上几行，IP地址、子网掩码、网关、dns服务器<br>
-IPADDR=192.168.1.160<br>
-NETMASK=255.255.255.0<br>
-GATEWAY=192.168.1.1<br>
-DNS1=119.29.29.29<br>
-DNS2=8.8.8.8<br>
-systemctl restart network #重启网络服务</p>
-<p>DNS<br>
-vi /etc/resolv.conf</p>
-<p>Nameserver 114.114.114.114<br>
-Nameserver 8.8.8.8</p>
+                <p>使用两台Cisco 6509（sup-2T引擎）进行测试，两台CISCO 6509形成VSS，分别使用两个引擎接口T5/4和T5/5作为VSL，使用G1/2作为双活检测线路；测试当VSL断开，使用fast-hello的机制，防止VSS双活的出现。测试拓扑如下</p>
+<p>具体配置：<br>
+Switch-1配置：</p>
+<p>（1）制定switch 1，配置优先级</p>
+<p>switch virtual domain 1<br>
+switch 1<br>
+switch 1 priority 110<br>
+switch 2 priority 100<br>
+mac-address use-virtual</p>
+<p>（2）配置VSL</p>
+<p>interface port-channel 1<br>
+no shut<br>
+switch virtual link 1<br>
+exit<br>
+interface ten 5/4<br>
+no shut<br>
+channel-group 1 mode on<br>
+exit<br>
+interface ten 5/5<br>
+no shut<br>
+channel-group 1 mode on<br>
+exit</p>
+<p>（3）特权模式下执行转换命令</p>
+<p>switch convert mode virtual<br>
+输入“yes”</p>
+<p>Switch-2配置：</p>
+<p>（1）制定switch 2，配置优先级</p>
+<p>switch virtual domain 1<br>
+switch 2<br>
+switch 1 priority 110<br>
+switch 2 priority 100<br>
+mac-address use-virtual</p>
+<p>（2）配置VSL</p>
+<p>interface port-channel 2<br>
+no shut<br>
+switch virtual link 2<br>
+exit<br>
+interface range ten 5/4<br>
+no shut<br>
+channel-group 2 mode on<br>
+exit<br>
+interface range ten 5/5<br>
+no shut<br>
+channel-group 2 mode on<br>
+exit</p>
+<p>（3）特权模式下执行转换命令</p>
+<p>switch convert mode virtual</p>
+<p>输入“yes”</p>
+<p>完成上述配置后设备会自动重启，形成VSS。</p>
+<p>两台CISCO 6509配置VSS之后设备6509-2的配置会消失需要重新配置VSL：</p>
+<p>interface port-channel 2<br>
+no shut<br>
+switch virtual link 2<br>
+exit<br>
+interface ten 2/5/4<br>
+channel-group 2 mode on<br>
+exit<br>
+interface ten 2/5/5<br>
+channel-group 2 mode on<br>
+exit</p>
+<p>配置双活检测：（使用另外的互联线路）</p>
+<p>switch virtual domain 1<br>
+dual-active detection fast-hello<br>
+int g1/1/2<br>
+shut<br>
+dual-active fast-hello<br>
+int g2/1/2<br>
+shut<br>
+dual-active fast-hello<br>
+int g1/1/2<br>
+no shut<br>
+int g2/1/2<br>
+no shut</p>
+<p>完成环境搭建配置：</p>
+<p>（1）配置VSS-6509 vlan 1 IP地址：199.40.10.3/24,HSRP虚拟地址为199.40.10.13和199.40.10.10，具体配置如下：</p>
+<p>interface Vlan1<br>
+ip address 199.40.10.3 255.255.255.0<br>
+standby 4 ip 199.40.10.13<br>
+standby 4 priority 40<br>
+standby 4 preempt<br>
+standby 10 ip 199.40.10.10<br>
+standby 10 timers 5 20<br>
+standby 10 priority 40<br>
+standby 10 preempt</p>
+<p>（2）配置4510与VSS之间的channel：</p>
+<p>CISCO 4510：<br>
+interface Port-channel 10<br>
+switchport<br>
+switchport mode trunk<br>
+interface TenGigabitEthernet5/1<br>
+switchport mode trunk<br>
+channel-group 10 mode on<br>
+interface TenGigabitEthernet6/1<br>
+switchport mode trunk<br>
+channel-group 10 mode on</p>
+<p>CISCO VSS-6509:</p>
+<p>interface Port-channel 10<br>
+switchport<br>
+switchport mode trunk<br>
+interface TenGigabitEthernet 1/8/1<br>
+switch<br>
+switchport mode trunk<br>
+channel-group 10 mode on<br>
+interface TenGigabitEthernet2/8/1<br>
+switch<br>
+switchport mode trunk<br>
+channel-group 10 mode on</p>
+<p>（3）配置4510的ip地址及网关：</p>
+<p>interface Vlan 1<br>
+ip address 199.40.10.100 255.255.255.0<br>
+ip default-gateway 199.40.10.10</p>
+<p>（4）配置测试PC地址为199.40.10.123/24，网关为199.40.10.10；将连接PC的接口打开，并配置为access模式：</p>
+<p>Interface g2/47<br>
+Switch<br>
+Switch mode access<br>
+Spanning-tree portfast</p>
 
             </div>
             <hr style="width: 80%;">
@@ -879,27 +966,27 @@ Nameserver 8.8.8.8</p>
             <div class="postfooter">
                 <ul class="post-copyright">
                     <li><strong>文章作者：</strong></li>
-            <li><strong>原文链接：</strong>https://pengsept.github.io/post/test/</li>
+            <li><strong>原文链接：</strong>https://pengsept.github.io/post/cisco-switch-vss-c4500-c6500-c6800/</li>
             <li><strong>版权声明：</strong>本博客所有文章除特别声明外，均采用<i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA
                 许可协议。转载请注明出处！</li>
             </ul>
         </div>
         <div id="otherpost">
             
-            <a  data-pjax class="prev-post-pc" href="https://pengsept.github.io/post/mac-book-os-an-zhuang/"  style="color: black;">
-                <div id="ppcontainer">
+            
+            <a data-pjax class="next-post-pc" href="https://pengsept.github.io/post/cisco-catalyst-c4506e-upgrade/"  style="color: black;">
+                <div id="npcontainer">
                     
                     
                     <img src="" style="width: 100%;" class="opimg">
                     
                     
-                    <h4 class="optitle">MAC book OS 安装</h4>
+                    <h4 class="optitle">Cisco Catalyst C4506E Upgrade</h4>
                 </div>
             </a>
-            <div class="prev-post">
-                上一篇 <a  data-pjax href="https://pengsept.github.io/post/mac-book-os-an-zhuang/">MAC book OS 安装</a>
+            <div class="next-post">
+                下一篇 <a  data-pjax href="https://pengsept.github.io/post/cisco-catalyst-c4506e-upgrade/">Cisco Catalyst C4506E Upgrade</a>
             </div>
-            
             
         </div>
     </div>
